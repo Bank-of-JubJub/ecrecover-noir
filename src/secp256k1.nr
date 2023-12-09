@@ -8,7 +8,7 @@ struct PubKey {
 }
 
 unconstrained
-fn split_uncompressed_pub_key(
+pub fn split_uncompressed_pub_key(
     pub_key: [u8; 65]
 ) -> ([u8; 32], [u8; 32]) {
     let mut pub_key_x: [u8; 32] = [0; 32];
@@ -23,14 +23,14 @@ fn split_uncompressed_pub_key(
 }
 
 impl PubKey {
-    fn from_xy(pub_x: [u8; 32], pub_y: [u8; 32]) -> PubKey {
+    pub fn from_xy(pub_x: [u8; 32], pub_y: [u8; 32]) -> PubKey {
         PubKey {
             pub_x,
             pub_y,
         }
     }
 
-    fn from_unified(pub_key: [u8; 64]) -> PubKey {
+    pub fn from_unified(pub_key: [u8; 64]) -> PubKey {
         let (key_x, key_y) = array_helpers::split_u8_64_unconstrained(pub_key);
 
         PubKey {
@@ -39,7 +39,7 @@ impl PubKey {
         }
     }
 
-    fn from_uncompressed(pub_key: [u8; 65]) -> PubKey {
+    pub fn from_uncompressed(pub_key: [u8; 65]) -> PubKey {
         assert(pub_key[0] == 0x04);
         let (key_x, key_y) = split_uncompressed_pub_key(pub_key);
 
@@ -49,11 +49,11 @@ impl PubKey {
         }
     }
 
-    fn verify_sig(self, signature: [u8; 64], hashed_message: [u8; 32]) -> bool {
+    pub fn verify_sig(self, signature: [u8; 64], hashed_message: [u8; 32]) -> bool {
         std::ecdsa_secp256k1::verify_signature(self.pub_x, self.pub_y, signature, hashed_message)
     }
 
-    fn to_eth_address(self) -> Field {
+    pub fn to_eth_address(self) -> Field {
         let pub_key = array_helpers::u8_32_to_u8_64_unconstrained(self.pub_x, self.pub_y);
         let hashed_pub_key = std::hash::keccak256(pub_key, 64);
 
@@ -66,7 +66,7 @@ impl PubKey {
         addr
     }
 
-    fn ecrecover(
+    pub fn ecrecover(
         self,
         signature: [u8; 64],
         hashed_message: [u8; 32]
